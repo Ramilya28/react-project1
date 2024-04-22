@@ -1,20 +1,12 @@
- import React, { useState } from 'react';
+import React, { useState } from 'react';
 
-export function Todo({ id, title, completed, onDelete, onEdit, onToggle }) {
+export function Todo({ todo, editTodo, deleteTodo, toggleStatus }) {
   const [editing, setEditing] = useState(false);
-  const [newTitle, setNewTitle] = useState(title);
-
-  const handleDelete = () => {
-    onDelete(id);
-  };
+  const [newTitle, setNewTitle] = useState(todo.title);
 
   const handleEdit = () => {
-    onEdit(id, newTitle);
+    editTodo(todo.id, { title: newTitle });
     setEditing(false);
-  };
-
-  const handleToggle = () => {
-    onToggle(id);
   };
 
   return (
@@ -23,8 +15,8 @@ export function Todo({ id, title, completed, onDelete, onEdit, onToggle }) {
         className="form-check-input"
         type="checkbox"
         value=""
-        checked={completed}
-        onChange={handleToggle}
+        checked={todo.status === 'completed'}
+        onChange={() => toggleStatus(todo.id)}
       />
       {editing ? (
         <input
@@ -35,15 +27,14 @@ export function Todo({ id, title, completed, onDelete, onEdit, onToggle }) {
           autoFocus
         />
       ) : (
-        <p>{title}</p>
+        <p>{todo.title}</p>
       )}
       <button type="button" className="btn btn-secondary" onClick={() => setEditing(!editing)}>
         {editing ? 'Save' : 'Edit'}
       </button>
-      <button type="button" className="btn btn-danger" onClick={handleDelete}>
+      <button type="button" className="btn btn-danger" onClick={() => deleteTodo(todo.id)}>
         Delete
       </button>
     </div>
   );
 }
-

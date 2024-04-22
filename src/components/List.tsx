@@ -1,56 +1,59 @@
-
 import React, { useState } from 'react';
 import { Todo } from './Todo';
 
 export function List() {
-  const [tasks, setTasks] = useState([
-    { id: 1, title: 'Task 1', completed: false },
-    { id: 2, title: 'Task 2', completed: true },
-    { id: 3, title: 'Task 3', completed: false },
+  const [todos, setTodos] = useState([
+    { id: 1, title: 'Task 1', date: '01.04', status: 'opened' },
+    { id: 2, title: 'Task 2', date: '02.04', status: 'completed' },
+    { id: 3, title: 'Task 3', date: '03.04', status: 'opened' },
   ]);
 
-  const handleAddTask = () => {
-    const newTask = { id: Date.now(), title: 'New Task', completed: false };
-    setTasks([...tasks, newTask]);
+  const deleteTodo = (id) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
   };
 
-  const handleDeleteTask = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
-  };
-
-  const handleEditTask = (id, newTitle) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, title: newTitle } : task
+  const editTodo = (id, updatedTodo) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, ...updatedTodo } : todo
       )
     );
   };
 
-  const handleToggleTask = (id) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
+  const toggleStatus = (id) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, status: todo.status === 'opened' ? 'completed' : 'opened' } : todo
       )
     );
+  };
+
+  const selectStatus = (e) => {
+    const value = e.target.value;
+    if (value === 'opened') {
+      setTodos(todos.filter(todo => todo.status === 'opened'));
+    } else if (value === 'completed') {
+      setTodos(todos.filter(todo => todo.status === 'completed'));
+    } else {
+      setTodos([...todos]);
+    }
   };
 
   return (
     <>
       <p>Todo List</p>
-      <div>
-        <button type="button" className="btn btn-secondary" onClick={handleAddTask}>
-          Add
-        </button>
-      </div>
-      {tasks.map((task) => (
+      <select className="form-select" defaultValue='all' onChange={selectStatus}>
+        <option value="all">All</option>
+        <option value="opened">Opened</option>
+        <option value="completed">Completed</option>
+      </select>
+      {todos.map(todo => (
         <Todo
-          key={task.id}
-          id={task.id}
-          title={task.title}
-          completed={task.completed}
-          onDelete={handleDeleteTask}
-          onEdit={handleEditTask}
-          onToggle={handleToggleTask}
+          key={todo.id}
+          todo={todo}
+          editTodo={editTodo}
+          deleteTodo={deleteTodo}
+          toggleStatus={toggleStatus}
         />
       ))}
     </>
